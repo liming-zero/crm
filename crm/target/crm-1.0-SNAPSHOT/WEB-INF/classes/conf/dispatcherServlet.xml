@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com.bjpowernode.crm.controller" />
+
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="suffix" value=".jsp" />
+        <property name="prefix" value="/workbench/" />
+    </bean>
+
+    <!--声明拦截器: 拦截器可以有0个或多个, 在框架中保存多个拦截器是ArrayList集合，按照声明的先后顺序放入ArrayList-->
+    <mvc:interceptors>
+        <!--登录功能拦截器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="com.bjpowernode.crm.web.handler.LoginInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--注解驱动-->
+    <mvc:annotation-driven />
+
+    <!--声明 springmvc框架中的视图解析器，帮助开发人员设置视图文件的路径-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+        <!--有两个属性: 前缀:视图文件的路径-->
+        <property name="prefix" value="/workbench/" />
+        <!--后缀:视图文件的扩展名-->
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+</beans>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:property-placeholder location="classpath:conf/jdbc.properties" />
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:conf/mybatis.xml" />
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" >
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+        <property name="basePackage" value="com.bjpowernode.crm.dao" />
+    </bean>
+
+    <!--使用spring的事务处理-->
+    <!--1.声明事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--需要知道连接到数据库是哪个，指定数据源-->
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!--2.开启事务注解驱动，告诉spring使用注解管理事务，创建代理对象。transaction-manager的值是事务管理器对象-->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <context:component-scan base-package="com.bjpowernode.crm.service" />
+
+    <!--注册监听器-->
+    <bean id="sysInitListener" class="com.bjpowernode.crm.web.listener.SysInitListener" autowire="byType"/>
+        <!--<property name="dicService" ref="dicServiceImpl" />
+        <property name="application" ref="servletContext" />
+    </bean>-->
+
+</beans>
